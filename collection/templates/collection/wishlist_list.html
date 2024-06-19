@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <input id='newWishlistName' type='text' placeholder='Nuova wishlist' maxlength='30'>
+    <button id='addNewWishlist'>Aggiungi</button>
+    <div id='wishlists'>
+    {% for item in object_list %}
+    <div>
+        <p> <a href = {% url "collection:wishlist_detail" wishlist_id=item.id%}> {{item.name}} </a> </p>
+        <button class='deleteWishlist' id='{{item.id}}'>Rimuovi</button>
+    </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $('#addNewWishlist').click(function(){
+            var new_wishlist_url_placeholder = '{% url "collection:wishlist_detail" wishlist_id=0 %}';
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "api:wishlists-list" %}',
+                data: {
+                    'name': $('#newWishlistName').val()
+                },
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'  // Django richiede il token CSRF per le richieste POST
+                },
+                success: function(response){
+                    $('#newWishlistName').val('')
+                    console.log('Success:', response);
+
+                    var new_wishlist_url = new_wishlist_url_placeholder.replace('/0/','/'+response.id+'/');
+                    $('#wishlists').append(`<div>
+                                                <p> <a href=${new_wishlist_url}>${response.name}</a></p>
+                                                <button class="deleteWishlist" id=${response.id}>Rimuovi</button>
+                                            </div>`);
+                },
+                error: function(xhr, status, error){
+                    console.log('Error:', xhr.responseText);
+                }
+            });
+        });
+
+        $('#wishlists').on('click','.deleteWishlist',function(){
+            var parent = $(this).parent('div')
+
+            $.ajax({
+                type: 'DELETE',
+                url: '{% url "api:wishlists-list" %}'+$(this).attr('id'),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'  // Django richiede il token CSRF per le richieste POST
+                },
+                success: function(response){
+                    console.log('Success:', response);
+
+                    parent.remove();
+                },
+                error: function(xhr, status, error){
+                    console.log('Error:', xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+{% endblock script %}

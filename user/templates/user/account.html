@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <img src={{object.profile.profile_pic.url}}>
+    <p> {{object.username}} </p>
+    <p> {{object.profile.bio}} </p>
+    <p> Telefono: {{object.profile.phone_number}} </p>
+
+    <h3> <a href = {% url "collection:collection" user_id=object.id %}> Collezione </a> </h3>
+    {% for set, cards_data in cards_by_set.items %}
+        <p> {{set.name}} {{set.cod}} {{cards_data.num_owned_cards}} {{cards_data.num_set_cards}} {{cards_data.completing_score}}% </p>
+    {% endfor %}
+
+    <h3> Wishlists </h3>
+    <div id='wishlists'>
+    {% for item in object.wishlists.all %}
+        <p> <a href = {% url "collection:wishlist_detail" wishlist_id=item.id%}> {{item.name}} </a> </p>
+    {% endfor %}
+    </div>
+
+    {% if request.user.is_authenticated and object.id == request.user.id %}
+        <form method="post" action="{% url 'user:logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+        <a href="{% url 'user:account_edit' %}"> Modifica </a>
+    {% endif %}
+    
+{% endblock content %}

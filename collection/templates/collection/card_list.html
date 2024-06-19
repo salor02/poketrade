@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block head %} 
+    {% load static %} 
+{% endblock head %} 
+
+{% block content %}
+    {% for set, cards in cards_by_set.items %}
+        <p> {{set.name}} {{set.cod}} </p>
+        {% for card in cards %}
+            <a href = {% url 'collection:card_detail' game_id=set.game_id set_id=set.id card_id=card.id %}> <img src = "{% static card.img_url %}"> </a>
+            {% if user.is_authenticated %}
+                {% if card in owned %}
+                    <button class="manageCollection" data-action='remove' data-card-id={{card.id}}>Rimuovi</button>
+                {% else %}
+                    <button class="manageCollection" data-action='add' data-card-id={{card.id}}>Aggiungi</button>
+                {% endif %}
+                {% for wishlist in wishlists %}
+                    {% if card in wishlist.cards.all %}
+                        <button class="manageCollection" data-action='remove' data-wishlist-id={{wishlist.id}} data-card-id={{card.id}}>Rimuovi</button>
+                    {% else %}
+                        <button class="manageCollection" data-action='add' data-wishlist-id={{wishlist.id}} data-card-id={{card.id}}>Aggiungi</button>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $('.manageCollection').click(function(){
+
+            var button = $(this);
+            var cardId = button.data('card-id');
+            var action = button.data('action');
+            var wishlistId = button.data('wishlist-id');
+            
+            $.ajax({
+                url: "{% url 'collection:collection_manage' %}",  // URL dove inviare la richiesta POST
+                type: 'POST',
+                data: {
+                    'action': action,
+                    'card_id': cardId,
+                    'wishlist_id': wishlistId
+                },
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'  // Django richiede il token CSRF per le richieste POST
+                },
+                success: function(response) {
+                    console.log('Success:', response);
+                    if(action == 'remove'){
+                        button.data('action', 'add');
+                        button.text('Aggiungi');
+                    }
+                    else{
+                        button.data('action', 'remove');
+                        button.text('Rimuovi');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error:', xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+{% endblock script %}
