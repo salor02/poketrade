@@ -82,57 +82,6 @@ class SetCardView(CardListView):
         set = get_object_or_404(Set, pk=set_id)
         return set.cards.all()
 
-def wishlist_detail_view(request, **kwargs):
-    owned = []
-    wishlists = []
-    
-    wishlist = get_object_or_404(Wishlist, pk=kwargs['wishlist_id'])
-    cards = wishlist.cards.select_related('set').order_by('set__release_date')
-
-    if request.user.is_authenticated:
-        owned = cards.filter(owners=request.user)
-        wishlists = Wishlist.objects.filter(user=request.user)
-
-    cards_by_set = get_cards_by_set(cards)
-
-    context = {'title' : 'Wishlist - '+str(wishlist.name), 'cards_by_set' : cards_by_set, 'owned': owned, 'wishlists': wishlists}
-    return render(request, template_name="collection/card_list.html", context=context) 
-
-def collection_view(request, **kwargs):
-    owned = []
-    wishlists = []
-    
-    user_id = kwargs['user_id']
-    user = User.objects.get(pk=user_id)
-
-    cards = Card.objects.filter(owners=user)
-    cards_by_set = get_cards_by_set(cards)
-
-    if request.user.is_authenticated:
-        owned = Card.objects.filter(owners=request.user)
-        wishlists = Wishlist.objects.filter(user=request.user)
-
-    context = {'title' : 'Collection', 'cards_by_set' : cards_by_set, 'owned': owned, 'wishlists': wishlists}
-    return render(request, template_name="collection/card_list.html", context=context) 
-
-def card_list_view(request, **kwargs):
-
-    owned = []
-    wishlists = []
-
-    set_id = kwargs['set_id']
-    cards = Card.objects.filter(set_id=set_id)
-
-    if request.user.is_authenticated:
-        owned = Card.objects.filter(owners=request.user)
-        wishlists = Wishlist.objects.filter(user=request.user)
-
-    cards_by_set = {}
-    cards_by_set[cards[0].set] = cards
-    
-    context = {'title' : 'My collection', 'cards_by_set' : cards_by_set, 'owned': owned, 'wishlists': wishlists}
-    return render(request, template_name="collection/card_list.html", context=context)
-
 @login_required
 @require_POST
 def collection_manage(request):
