@@ -13,7 +13,11 @@
         
 </head>
 <body>
-    {% include 'navbar.html' %}
+    {% if request.user.is_authenticated and request.session.selection %}
+        {% include "marketplace/navbar_selection.html" %}
+    {% else %}
+        {% include 'navbar.html' %}
+    {% endif %}
     <div>
         {% block content %}
         {% endblock %}

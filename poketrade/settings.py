@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap4',
     'collection.apps.CollectionConfig',
+    'marketplace.apps.MarketplaceConfig',
     'user.apps.UserConfig',
     'api.apps.ApiConfig',
 ]
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'marketplace.middleware.SelectionModeMiddleware'
 ]
 
 ROOT_URLCONF = 'poketrade.urls'

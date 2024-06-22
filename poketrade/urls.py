@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^home\/$|^$', homeView, name = 'home'),
     path('collection/', include('collection.urls')),
+    path('marketplace/', include('marketplace.urls')),
     path('api/v1/', include('api.urls')),
     path('user/', include('user.urls')),
 ]

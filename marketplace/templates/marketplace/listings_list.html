@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block head %} 
+    {% load static %} 
+{% endblock head %} 
+
+{% block content %}
+    <p> <a href = {% url 'marketplace:listing_create' %} > Crea annuncio </a> </p>
+    <div id='listings'>
+    {% for item in object_list %}
+        <div>
+            <a href={% url "marketplace:listing_detail" listing_id=item.id %}> {{item.description}} </a>
+            {% if request.user.is_authenticated and item.user == request.user %}
+                <button class='deleteListing' id='{{item.id}}'>Rimuovi</button>
+            {% endif %}
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% if request.user.is_authenticated and item.user == request.user %}
+    {% block script %}
+    <script>
+        $('#listings').on('click','.deleteListing',function(){
+            var parent = $(this).parent('div')
+
+            $.ajax({
+                type: 'DELETE',
+                url: '{% url "api:listings-list" %}'+$(this).attr('id'),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'  // Django richiede il token CSRF per le richieste POST
+                },
+                success: function(response){
+                    console.log('Success:', response);
+
+                    parent.remove();
+                },
+                error: function(xhr, status, error){
+                    console.log('Error:', xhr.responseText);
+                }
+            });
+        });
+    </script>
+    {% endblock script %}
+{% endif %}

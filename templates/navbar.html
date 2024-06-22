@@ -13,6 +13,8 @@
                             <li><a class="dropdown-item" href={% url 'user:account_detail' user_id=request.user.id %}>Account</a></li>
                             <li><a class="dropdown-item" href={% url 'collection:collection' user_id=request.user.id%}>Collezione</a></li>
                             <li><a class="dropdown-item" href={% url 'collection:wishlist_list' %}>Wishlist</a></li>
+                            <li><a class="dropdown-item" href={% url 'marketplace:listings_list' user_id=request.user.id%}>Miei annunci</a></li>
+                            <li><a class="dropdown-item" href="#">Transazioni</a></li>
                         </ul>
                     </li>
                 {% else %}
@@ -25,13 +27,8 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'collection:game_list' %}">Esplora</a>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Marketplace </a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Miei annunci</a></li>
-                    <li><a class="dropdown-item" href="#">Market</a></li>
-                    <li><a class="dropdown-item" href="#">Transazioni</a></li>
-                </ul>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'marketplace:market' %}">Marketplace</a>
             </li>
         </ul>
     </div>

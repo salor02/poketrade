@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{% url "home" %}">Selezione carte</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'collection:game_list' %}">Esplora</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href={% url 'collection:collection' user_id=request.user.id %}>Collezione</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href={% url 'collection:wishlist_list' %}>Wishlist</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href={% url 'marketplace:end_selection' %}>Termina selezione</a>
+            </li>
+            {% if request.session.selection_dest == 'for_sale' %}
+                <li class="nav-item">
+                    <a class="nav-link" href={% url 'marketplace:start_in_exchange_selection' %}>Richiedi carte in scambio</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+  

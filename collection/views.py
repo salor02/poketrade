@@ -10,6 +10,7 @@ from .utils import get_cards_by_set
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
 from .forms import *
+from marketplace.models import Listing
 
 # Create your views here.
 
@@ -53,15 +54,31 @@ class CardListView(TemplateView):
             wishlists = Wishlist.objects.filter(user=self.request.user)
         return owned, wishlists
     
+    def get_listed(self):
+        listed = []
+        if self.request.user.is_authenticated and 'selection' in self.request.session:
+            listing_id = self.request.session['listing_id']
+            if listing_id:
+                try:
+                    if self.request.session['selection_dest'] == 'for_sale':
+                        listed = Listing.objects.get(pk=listing_id, user=self.request.user).cards_for_sale.all()
+                    elif self.request.session['selection_dest'] == 'in_exchange':
+                        listed = Listing.objects.get(pk=listing_id, user=self.request.user).cards_in_exchange.all()
+                except Listing.DoesNotExist:
+                    return []
+        return listed
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        listed = self.get_listed()
         owned, wishlists = self.get_owned_and_wishlists()
         cards_by_set = get_cards_by_set(self.get_queryset())
 
         context['owned'] = owned
         context['wishlists'] = wishlists
         context['cards_by_set'] = cards_by_set
+        context['listed'] = listed
         return context
 
 class CollectionView(CardListView):
