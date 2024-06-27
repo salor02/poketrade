@@ -6,6 +6,13 @@
     <p> {{object.profile.bio}} </p>
     <p> Telefono: {{object.profile.phone_number}} </p>
 
+    {% if avg_rating %}
+        <h3> Valutazione media: {{avg_rating}} </h3>
+        <a href={% url "marketplace:feedback_list" user_id=object.id %}> Visualizza tutti i feedback </a>
+    {% else %}
+        <p> Nessun feedback disponibile </p>
+    {% endif %}
+    
     <h3> <a href = {% url "collection:collection" user_id=object.id %}> Collezione </a> </h3>
     {% for set, cards_data in cards_by_set.items %}
         <p> {{set.name}} {{set.cod}} {{cards_data.num_owned_cards}} {{cards_data.num_set_cards}} {{cards_data.completing_score}}% </p>

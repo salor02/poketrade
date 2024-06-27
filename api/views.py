@@ -18,6 +18,12 @@ class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.all()
     serializer_class = ListingSerializer
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.sold:
+            return HttpResponseBadRequest('Non è possibile eliminare un annuncio già venduto')
+        return super().destroy(request, *args, **kwargs)
+
     @action(detail=True, methods=['post','delete'], url_path='add-remove-cards')
     def add_remove_card(self, request, pk=None):
         listing = self.get_object()

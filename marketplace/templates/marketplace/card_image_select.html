@@ -1,0 +1,16 @@
+{% load static %}
+
+<h3> {{fieldset.legend }} </h3>
+{% for checkbox in field %}
+    <div class="checkbox">
+        {% for card in field.field.queryset %}
+            {% if card.pk == checkbox.data.value %}
+                <label for="{{ checkbox.id_for_label }}">
+                    {{ checkbox.tag }}
+                    <img src="{% static card.img_url %}" alt="{{ card.name }}" width="100">
+                    {{ card.name }}
+                </label>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endfor %}

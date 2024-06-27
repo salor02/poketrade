@@ -59,6 +59,9 @@ MIDDLEWARE = [
     #'marketplace.middleware.SelectionModeMiddleware'
 ]
 
+#più comodo per debug
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+
 ROOT_URLCONF = 'poketrade.urls'
 
 TEMPLATES = [
@@ -139,7 +142,7 @@ STATICFILES_DIRS = [path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = "user/login/"
+LOGIN_URL = "/user/login/"
 LOGIN_REDIRECT_URL = "/" #redireziona alla home
 LOGOUT_REDIRECT_URL = '/'
 

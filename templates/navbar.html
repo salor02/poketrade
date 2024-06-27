@@ -14,7 +14,9 @@
                             <li><a class="dropdown-item" href={% url 'collection:collection' user_id=request.user.id%}>Collezione</a></li>
                             <li><a class="dropdown-item" href={% url 'collection:wishlist_list' %}>Wishlist</a></li>
                             <li><a class="dropdown-item" href={% url 'marketplace:listings_list' user_id=request.user.id%}>Miei annunci</a></li>
-                            <li><a class="dropdown-item" href="#">Transazioni</a></li>
+                            <li><a class="dropdown-item" href={% url 'marketplace:accepted_transaction_list' %}>Vendite</a></li>
+                            <li><a class="dropdown-item" href={% url 'marketplace:pending_transaction_list' %}>Proposte inviate</a></li>
+                            <li><a class="dropdown-item" href={% url 'marketplace:purchased_transaction_list' %}>Acquisti</a></li>
                         </ul>
                     </li>
                 {% else %}

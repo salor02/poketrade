@@ -1,7 +1,8 @@
 from django import forms
 from django.urls import reverse_lazy
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Column, Hidden
+from crispy_forms.layout import Submit, Layout, Row, Column, Hidden, Fieldset, Field
+from django.shortcuts import get_object_or_404
 from .models import *
 from .urls import *
 from api.urls import *
@@ -25,3 +26,70 @@ class ListingUpdateForm(forms.ModelForm):
     class Meta:
         model = Listing
         fields = ['description', 'price', 'published']
+
+class TransactionUpdateForm(forms.ModelForm):
+
+    helper = FormHelper()
+    helper.form_method = 'POST'
+    helper.add_input(Submit('submit', 'Invia'))
+
+    accepted = forms.TypedChoiceField(
+        choices=((True, 'Sì'), (False, 'No')),
+        widget=forms.RadioSelect,
+        required=True,
+        initial=False
+    )
+
+    class Meta:
+        model = Transaction
+        fields = ['accepted']
+
+class TransactionCreateForm(forms.ModelForm):
+    proposed_cards = forms.ModelMultipleChoiceField(
+        queryset=Card.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
+    wanted_cards = forms.ModelMultipleChoiceField(
+        queryset=Card.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+
+    class Meta:
+        model = Transaction
+        fields = ['proposed_price', 'proposed_cards', 'wanted_cards']
+    
+    def __init__(self, *args, **kwargs):
+        listing_id = kwargs.pop('listing_id', None)
+        super().__init__(*args, **kwargs)
+        
+        if listing_id is not None:
+            self.fields['proposed_cards'].queryset = get_object_or_404(Listing, id=listing_id).cards_in_exchange.all()
+            self.fields['wanted_cards'].queryset = get_object_or_404(Listing, id=listing_id).cards_for_sale.all()
+
+    helper = FormHelper()
+    helper.form_method = 'POST'
+    helper.layout = Layout(
+            'proposed_price',
+            Fieldset('Carte offerte in scambio', 'proposed_cards', template='marketplace/card_image_select.html'),
+            Fieldset('Carte da acquistare', 'wanted_cards', template='marketplace/card_image_select.html'),
+            Submit('submit', 'Invio')
+        )
+    
+class FeedbackCreateForm(forms.ModelForm):
+
+    helper = FormHelper()
+    helper.form_method = 'POST'
+    helper.add_input(Submit('submit', 'Invia'))
+
+    class Meta:
+        model = Feedback
+        fields = ['rating', 'comment']
+
+    rating = forms.DecimalField(
+        required=True,
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        help_text="Valuta da 1 a 10"
+    )

@@ -25,11 +25,11 @@
         {% endfor %}
     </div>
     <div> Descrizione: {{object.description}} </div>
-    {% if request.user.is_authenticated %}
+    {% if request.user.is_authenticated and object.sold == False%}
         {% if object.user == request.user %}
             <a href={% url 'marketplace:listing_update' listing_id=object.id %}> Modifica </a>
         {% else %}
-            <a href='#'> Acquista </a>
+            <a href={% url "marketplace:transaction_create" listing_id=object.id %}> Acquista </a>
         {% endif %}
     {% endif %}
 {% endblock content %}

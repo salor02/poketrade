@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block head %} 
+    {% load static %} 
+{% endblock head %} 
+
+{% block content %}
+    <a href={% url "user:account_detail" user_id=object.listing.user.id %}> Venditore {{object.listing.user.username}} </a>
+    <a href={% url "user:account_detail" user_id=object.buyer.id %}> Acquirente {{object.buyer.username}} </a>
+    <a href={% url "marketplace:listing_detail" listing_id=object.listing.id %}> Vai all'annuncio </a>
+    <div>
+        <h3> Carte da acquistare </h3>
+        {% for card in object.wanted_cards.all %}
+            <div>
+                <img src = "{% static card.img_url %}">
+                <p> {{card.cod}} </p>
+            </div>
+        {% endfor %}
+    </div>
+    <div>
+        <h3> Carte offerte in scambio </h3>
+        {% for card in object.proposed_cards.all %}
+            <div>
+                <img src = "{% static card.img_url %}">
+                <p> {{card.cod}} </p>
+            </div>
+        {% endfor %}
+    </div>
+    <p> Prezzo proposto: €{{object.proposed_price}} </p>
+    {% block status %}
+        <p>
+            Stato: 
+            {% if object.accepted == None %}
+                pending
+            {% elif object.accepted == True %}
+                accettato
+            {% else %}
+                rifiutato
+            {% endif %}
+        </p>
+    {% endblock status %}
+{% endblock content %}

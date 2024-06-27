@@ -9,9 +9,22 @@
     <div id='listings'>
     {% for item in object_list %}
         <div>
-            <a href={% url "marketplace:listing_detail" listing_id=item.id %}> {{item.description}} </a>
+            <a href={% url "marketplace:listing_detail" listing_id=item.id %}> [{{item.created_at}}] {{item.description}} </a>
             {% if request.user.is_authenticated and item.user == request.user %}
-                <button class='deleteListing' id='{{item.id}}'>Rimuovi</button>
+                {% if item.sold == False %}
+                    <button class='deleteListing' id='{{item.id}}'>Rimuovi</button>
+                    {% if item.pending_transactions_count > 0 %}
+                        <a href={% url "marketplace:transaction_list" listing_id=item.id%}> Hai {{item.pending_transactions_count}}
+                        {% if item.pending_transactions_count > 1 %}
+                            proposte da valutare</a>
+                        {% else %}
+                            proposta da valutare</a>
+                        {% endif %} 
+                    {% endif %}
+                {% else %}
+                    Articolo venduto
+                    <a href={% url "marketplace:transaction_list" listing_id=item.id%}> Visualizza storico proposte </a>
+                {% endif %}
             {% endif %}
         </div>
     {% endfor %}

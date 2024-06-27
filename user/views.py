@@ -31,6 +31,12 @@ class UserDetailView(DetailView):
         user_id = self.kwargs.get(self.pk_url_kwarg)
         user = User.objects.get(id=user_id)
 
+        received_ratings = [feedback.rating for feedback in user.received_feedbacks.filter(rating__isnull=False)]
+
+        if len(received_ratings) > 0:
+            avg_rating = sum(received_ratings) / len(received_ratings)
+        else:
+            avg_rating = None
         
         owned_cards = user.owned_cards.all()
         cards_by_set = get_cards_by_set(owned_cards)
@@ -41,6 +47,7 @@ class UserDetailView(DetailView):
 
         context['cards_by_set'] = cards_by_set
         context['title'] = 'Account'
+        context['avg_rating'] = avg_rating
         return context
     
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
