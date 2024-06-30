@@ -114,7 +114,7 @@ def collection_manage(request):
         try:
             card = Card.objects.get(pk=request.POST['card_id'])
         except Card.DoesNotExist:
-            return HttpResponseBadRequest('Provided card_id does not exists')
+            return HttpResponseBadRequest('La carta con ID fornito non esiste')
         
         if request.POST['action'] == 'add':
             if wishlist:
@@ -122,16 +122,16 @@ def collection_manage(request):
                 return JsonResponse({'success':f'Carta aggiunta alla wishlist {wishlist.name}'})
             else:
                 card.owners.add(request.user)
-                return JsonResponse({'success':'Card correctly added in collection'})
+                return JsonResponse({'success':'Carta correttamente aggiunta alla collezione'})
         elif request.POST['action'] == 'remove':
             if wishlist:
                 wishlist.cards.remove(card)
                 return JsonResponse({'success':f'Carta rimossa dalla wishlist {wishlist.name}'})
             else:
                 card.owners.remove(request.user)
-                return JsonResponse({'success':'Card correctly removed from collection'})
+                return JsonResponse({'success':'Card correttamente rimossa dalla collezione'})
         else:
-            return HttpResponseBadRequest('Provided action is not valid')
-    return HttpResponseBadRequest('Missing action or card_id')
+            return HttpResponseBadRequest('Questa azione non è valida')
+    return HttpResponseBadRequest('Il parametro action o card_id risultano mancanti')
 
     

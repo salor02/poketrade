@@ -143,7 +143,7 @@ STATICFILES_DIRS = [path.join(BASE_DIR, 'static')]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = "/user/login/"
-LOGIN_REDIRECT_URL = "/" #redireziona alla home
+LOGIN_REDIRECT_URL = "/?login=1"
 LOGOUT_REDIRECT_URL = '/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

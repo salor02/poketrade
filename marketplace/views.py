@@ -63,7 +63,7 @@ class ListingUpdateView(LoginRequiredMixin, UpdateView):
         return self.model.objects.filter(user=self.request.user)
 
     def get_success_url(self):
-        return reverse_lazy('marketplace:listings_list', kwargs={'user_id' : self.request.user.id})
+        return reverse_lazy('marketplace:listings_list', kwargs={'user_id' : self.request.user.id})+'?updated=1'
     
 class ListingDetailView(DetailView):
     model = Listing
@@ -111,7 +111,7 @@ class TransactionCreateView(LoginRequiredMixin, CreateView):
         return response
     
     def get_success_url(self):
-        return reverse_lazy('marketplace:market')
+        return reverse_lazy('marketplace:pending_transaction_list')+'?created=1'
     
 class TransactionListView(LoginRequiredMixin, ListView):
     model = Transaction
@@ -144,7 +144,7 @@ class TransactionUpdateView(LoginRequiredMixin, UpdateView):
         return self.model.objects.filter(accepted=None, listing__user=self.request.user, listing__sold=False)
 
     def get_success_url(self):
-        return reverse_lazy('marketplace:listings_list', kwargs={'user_id' : self.request.user.id})
+        return reverse_lazy('marketplace:listings_list', kwargs={'user_id' : self.request.user.id})+'?updatedTransaction=1'
     
 class TransactionDetailView(LoginRequiredMixin, DetailView):
     model = Transaction

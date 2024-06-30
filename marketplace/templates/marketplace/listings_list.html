@@ -14,6 +14,18 @@
         </p>
     {% endif %}
     <div id="listings">
+        {% if request.user.is_authenticated %}
+            {% if request.GET.updated == '1' %}
+                <div class="alert alert-success" role="alert">
+                    Annuncio modificato con successo!
+                </div>
+            {% elif request.GET.updatedTransaction == '1' %}
+                <div class="alert alert-success" role="alert">
+                    Proposta valutata con successo!
+                </div>
+            {% endif %}
+        {% endif %}
+
         {% for item in object_list %}
             <div class="card mb-3">
                 <div class="card-body">
@@ -40,10 +52,10 @@
                                 {% endif %}
                             {% else %}
                                 <span class="text-success"><i class="fas fa-check"></i> Articolo venduto</span>
-                                <a href="{% url 'marketplace:transaction_list' listing_id=item.id %}" class="btn btn-outline-info">
-                                    <i class="fas fa-history"></i> Visualizza storico proposte
-                                </a>
                             {% endif %}
+                            <a href="{% url 'marketplace:transaction_list' listing_id=item.id %}" class="btn btn-outline-info">
+                                <i class="fas fa-history"></i> Visualizza storico proposte
+                            </a>
                         </div>
                     {% endif %}
                 </div>
@@ -68,11 +80,12 @@
                 },
                 success: function(response){
                     console.log('Success:', response);
-
+                    alert('Annuncio eliminato correttamente');
                     parent.remove();
                 },
                 error: function(xhr, status, error){
                     console.log('Error:', xhr.responseText);
+                    alert("Impossibile complteare l'operazione");
                 }
             });
         });

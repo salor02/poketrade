@@ -48,6 +48,7 @@
                 success: function(response){
                     $('#newWishlistName').val('')
                     console.log('Success:', response);
+                    alert('Nuova wishlist create correttamente');
 
                     var new_wishlist_url = new_wishlist_url_placeholder.replace('/0/','/'+response.id+'/');
                     $('#wishlists').append(`<div class="mb-3 border rounded p-3">
@@ -63,6 +64,7 @@
                 },
                 error: function(xhr, status, error){
                     console.log('Error:', xhr.responseText);
+                    alert('Errore nella creazione della wishlist');
                 }
             });
         });
@@ -78,10 +80,13 @@
                 },
                 success: function(response){
                     console.log('Success:', response);
+                    alert('Wishlist eliminata correttamente');
+
                     parent.remove();
                 },
                 error: function(xhr, status, error){
                     console.log('Error:', xhr.responseText);
+                    alert('Impossibile eliminare la wishlist');
                 }
             });
         });

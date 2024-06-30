@@ -4,7 +4,13 @@
 
 {% block content %}
     <div class="container">
-        <div class="text-center mb-4">
+        <div class="text-center mt-4 mb-4">
+            {% if request.GET.updated == '1' %}
+                <div class="alert alert-success" role="alert">
+                    Profilo aggiornato con successo!
+                </div>
+            {% endif %}
+
             <div class="profile-pic-container">
                 {% if object.profile.profile_pic.url %}
                     <img src="{{ object.profile.profile_pic.url }}" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">

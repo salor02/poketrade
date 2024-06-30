@@ -130,22 +130,25 @@
                 success: function(response) {
                     console.log('Success:', response);
                     if(action == 'remove'){
+                        alert(response.success)
                         button.data('action', 'add');
-                        button.toggleClass('btn-outline-danger')
-                        button.toggleClass('btn-outline-success')
-                        button.children('i').toggleClass('fa-minus')
-                        button.children('i').toggleClass('fa-plus')
+                        button.toggleClass('btn-outline-danger');
+                        button.toggleClass('btn-outline-success');
+                        button.children('i').toggleClass('fa-minus');
+                        button.children('i').toggleClass('fa-plus');
                     }
                     else{
+                        alert(response.success)
                         button.data('action', 'remove');
-                        button.toggleClass('btn-outline-danger')
-                        button.toggleClass('btn-outline-success')
-                        button.children('i').toggleClass('fa-minus')
-                        button.children('i').toggleClass('fa-plus')
+                        button.toggleClass('btn-outline-danger');
+                        button.toggleClass('btn-outline-success');
+                        button.children('i').toggleClass('fa-minus');
+                        button.children('i').toggleClass('fa-plus');
                     }
                 },
                 error: function(xhr, status, error) {
                     console.log('Error:', xhr.responseText);
+                    alert(xhr.responseText);
                 }
             });
         });
@@ -172,21 +175,24 @@
                         console.log('Success:', response);
                         if(action == 'delete'){
                             button.data('action', 'post');
-                            button.toggleClass('btn-outline-danger')
-                            button.toggleClass('btn-outline-success')
-                            button.children('i').toggleClass('fa-minus')
-                            button.children('i').toggleClass('fa-plus')
+                            button.toggleClass('btn-outline-danger');
+                            button.toggleClass('btn-outline-success');
+                            button.children('i').toggleClass('fa-minus');
+                            button.children('i').toggleClass('fa-plus');
+                            alert('Carta rimossa dalla selezione');
                         }
                         else{
                             button.data('action', 'delete');
-                            button.toggleClass('btn-outline-danger')
-                            button.toggleClass('btn-outline-success')
-                            button.children('i').toggleClass('fa-minus')
-                            button.children('i').toggleClass('fa-plus')
+                            button.toggleClass('btn-outline-danger');
+                            button.toggleClass('btn-outline-success');
+                            button.children('i').toggleClass('fa-minus');
+                            button.children('i').toggleClass('fa-plus');
+                            alert('Carta aggiunta alla selezione');
                         }
                     },
                     error: function(xhr, status, error) {
                         console.log('Error:', xhr.responseText);
+                        alert('Impossibile completare questa azione');
                     }
                 });
             });

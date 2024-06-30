@@ -63,4 +63,4 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return profile
 
     def get_success_url(self):
-        return reverse_lazy('user:account_detail', kwargs={'user_id' : self.request.user.id})
+        return reverse_lazy('user:account_detail', kwargs={'user_id' : self.request.user.id})+'?updated=1'
