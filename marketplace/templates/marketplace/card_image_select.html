@@ -3,6 +3,11 @@
 <div class="container mt-4 text-light">
     <h3 class="mb-4">{{ fieldset.legend }}</h3>
     <div class="row">
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+        {% endfor %}
         {% for checkbox in field %}
             {% for card in field.field.queryset %}
                 {% if card.pk == checkbox.data.value %}

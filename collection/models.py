@@ -30,7 +30,7 @@ class Card(models.Model):
 class Wishlist(models.Model):
     name = models.CharField(max_length=30)
 
-    cards = models.ManyToManyField(Card, related_name='cards')
+    cards = models.ManyToManyField(Card, related_name='wishlists')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlists')
 
 

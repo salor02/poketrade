@@ -4,7 +4,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from .models import *
-from .forms import ListingCrispyForm, ListingUpdateForm, TransactionCreateForm, TransactionUpdateForm, FeedbackCreateForm
+from .forms import ListingCrispyForm, ListingUpdateForm, TransactionCreateForm, TransactionUpdateForm, FeedbackCreateForm, SearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
@@ -12,7 +12,7 @@ from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
 from django.http import Http404, HttpResponseBadRequest, HttpResponseNotFound 
 from .utils import *
-from django.db.models import Q, Count
+from django.db.models import Q, F, Count
 
 # Create your views here.
 class ListingsListView(ListView):
@@ -20,9 +20,13 @@ class ListingsListView(ListView):
     template_name = "marketplace/listings_list.html"
 
     def get_queryset(self):
-        return self.model.objects.filter(user = self.kwargs['user_id']).annotate(
+        queryset = self.model.objects.filter(user = self.kwargs['user_id']).annotate(
             pending_transactions_count=Count('transactions', filter=Q(transactions__accepted=None))
-        ).order_by('sold')
+        ).order_by('sold', '-created_at')
+
+        if self.request.user.is_authenticated and self.request.user.id != self.kwargs['user_id']:
+            return queryset.filter(published=True)
+        return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -34,11 +38,56 @@ class MarketListingListView(ListView):
     model = Listing
     template_name = "marketplace/market.html"
 
+    def search(self):
+        search_query = self.request.GET.get('search','').upper()
+
+        res = self.model.objects.none()
+
+        if search_query:
+            for param in search_query.split(" "):
+                res |= self.model.objects.filter(
+                    Q(cards_for_sale__cod=param) |
+                    Q(cards_in_exchange__cod=param)
+                )
+
+        return res
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        search_query = self.request.GET.get('search','').upper()
+        if search_query:
+            search_query = search_query.split(" ")
+        context['search_query'] = search_query
+        context['form'] = SearchForm
+        return context
+
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            return self.model.objects.filter(published=True, sold=False).exclude(user=self.request.user)
+
+        search_res = self.search()
+        if search_res:
+            queryset = search_res
         else:
-            return self.model.objects.filter(published=True, sold=False)
+            queryset = self.model.objects
+
+        #recommendation system
+        if self.request.user.is_authenticated:
+            res = queryset.filter(published=True, sold=False
+                ).exclude(user=self.request.user
+                ).annotate(
+                    cards_in_wishlist=Count('cards_for_sale', filter=Q(cards_for_sale__wishlists__user=self.request.user), distinct=True),
+                    cards_in_collection=Count('cards_in_exchange', filter=Q(cards_in_exchange__owners=self.request.user), distinct=True)
+                ).annotate(
+                    total_score=F('cards_in_wishlist') + F('cards_in_collection')
+                ).order_by('-total_score','-created_at')
+            
+            print("\nRecommendation system result")
+            for item in res:
+                print(f'[{item.id} - {item.user.username}] Cards in wishlist: {item.cards_in_wishlist} - Cards in collection: {item.cards_in_collection} --> Total score: {item.total_score}')
+            print()
+
+            return res
+        else:
+            return queryset.filter(published=True, sold=False).order_by('-created_at')
     
 class ListingCreateView(LoginRequiredMixin, CreateView):
     model = Listing

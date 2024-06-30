@@ -1,14 +1,75 @@
 {% extends "base.html" %}
 
-{% block head %} 
-    {% load static %} 
-{% endblock head %} 
+{% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-    {% for item in object_list %}
-        <div>
-            <a href={% url "marketplace:listing_detail" listing_id=item.id %}> [{{item.created_at}}] {{item.description}} </a>
-            <a href={% url "user:account_detail" user_id=item.user.id %}> {{item.user.username}} </a>
-        </div>
-    {% endfor %}
+    <div class="container mt-4">
+        {% crispy form %}
+        
+        {% for item in object_list %}
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        {% if item.user.profile.profile_pic %}
+                            <img src="{{ item.user.profile.profile_pic.url }}" alt="User Image" class="rounded-circle" width="50" height="50">
+                        {% endif %}
+                        <a href="{% url 'user:account_detail' user_id=item.user.id %}" class="ms-1 text-decoration-none"> <strong> {{ item.user.username }} </strong> </a>
+                    </div>
+                    {% if item.total_score > 0 %}
+                        <div class="alert alert-danger mb-0" role="alert">
+                            Raccomandato
+                        </div>
+                    {% endif %}
+                    <span class="text-muted">{{ item.created_at }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5>Carte in vendita</h5>
+                        <div class="row">
+                            {% for card in item.cards_for_sale.all %}
+                                <div class="col-md-1 mb-3 text-center">
+                                    <a class="text-decoration-none text-dark" href="{% url 'collection:card_detail' game_id=card.set.game.id set_id=card.set.id card_id=card.id %}">
+                                        <img src="{% static card.img_url %}" class="img-fluid mb-2" alt="{{ card.cod }}">
+                                        {% if card.cod in search_query %}
+                                            <p style="font-size: 0.7rem; background-color: yellow; font-weight: bold;">{{ card.cod }}</p>
+                                        {% else %}
+                                            <p style="font-size: 0.7rem;">{{ card.cod }}</p>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% if item.cards_in_exchange.count > 0 %}
+                        <hr>
+                        <div>
+                            <h5>Carte chieste in scambio</h5>
+                            <div class="row">
+                                {% for card in item.cards_in_exchange.all %}
+                                    <div class="col-md-1 mb-3 text-center">
+                                        <a class="text-decoration-none text-dark" href="{% url 'collection:card_detail' game_id=card.set.game.id set_id=card.set.id card_id=card.id %}">
+                                            <img src="{% static card.img_url %}" class="img-fluid mb-2" alt="{{ card.cod }}">
+                                            {% if card.cod in search_query %}
+                                                <p style="font-size: 0.7rem; background-color: yellow; font-weight: bold;">{{ card.cod }}</p>
+                                            {% else %}
+                                                <p style="font-size: 0.7rem;">{{ card.cod }}</p>
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <p class="mb-0">{{ item.description }}</p>
+                    <div class="d-flex align-items-center">
+                        <strong class="mr-3">€{{ item.price }}</strong>
+                        <a href="{% url 'marketplace:listing_detail' listing_id=item.id %}" class="btn btn-primary ms-3">Vai all'annuncio</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

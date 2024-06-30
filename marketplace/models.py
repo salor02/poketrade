@@ -23,6 +23,8 @@ class Listing(models.Model):
 
     def clean(self):
         super().clean()
+        if self.published and not self.cards_for_sale.exists():
+            raise ValidationError('Non puoi pubblicare un annuncio senza mettere in vendita nessuna carta!')
         if self.price < 0:
             raise ValidationError('Il prezzo non può essere negativo')
         
@@ -82,3 +84,4 @@ def update_listing_sold_out_status(sender, instance, **kwargs):
             user_dst = instance.buyer
         )
         feedback_from_seller.save()
+

@@ -1,7 +1,7 @@
 from django import forms
 from django.urls import reverse_lazy
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Column, Hidden, Fieldset, Field
+from crispy_forms.layout import Submit, Layout, Row, Column, Hidden, Fieldset, Field, Div, ButtonHolder
 from django.shortcuts import get_object_or_404
 from .models import *
 from .urls import *
@@ -92,4 +92,27 @@ class FeedbackCreateForm(forms.ModelForm):
         required=True,
         validators=[MinValueValidator(1), MaxValueValidator(10)],
         help_text="Valuta da 1 a 10"
+    )
+
+class SearchForm(forms.Form):
+    search = forms.CharField(
+        label=False,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Inserisci codice ESATTO della carta da cercare (oppure più codici separati da spazio)',
+            'class': 'form-control'
+        })
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'get'
+    helper.layout = Layout(
+        Div(
+            Field('search', wrapper_class='col-sm-10'),
+            Div(
+                Submit('submit', 'Cerca', css_class='btn-primary'), 
+                css_class='d-grid col-2'
+            ),
+            css_class='row mb-4'
+        )
     )
