@@ -20,6 +20,10 @@ class Card(models.Model):
     cod = models.CharField(max_length=10)
     img_url = models.CharField(max_length=200)
 
+    move1 = models.CharField(max_length=30)
+    move2 = models.CharField(max_length=30, blank=True, null=True)
+    description = models.CharField(max_length=200)
+
     set = models.ForeignKey(Set, on_delete=models.CASCADE, related_name='cards')
     owners = models.ManyToManyField(User, related_name='owned_cards')
 

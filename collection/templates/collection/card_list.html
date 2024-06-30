@@ -1,47 +1,110 @@
 {% extends "base.html" %}
 
-{% block head %} 
-    {% load static %} 
-{% endblock head %} 
+{% load static %}
+
+{% block head %}
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock head %}
 
 {% block content %}
+<div class="container">
+    {% if not cards_by_set.items %}
+        <div class="alert alert-danger mt-4" role="alert">
+            Non sono presenti carte nella lista
+        </div>
+    {% endif %}
+
     {% for set, cards in cards_by_set.items %}
-        <p> {{set.name}} {{set.cod}} </p>
-        {% for card in cards %}
-            <a href = {% url 'collection:card_detail' game_id=set.game_id set_id=set.id card_id=card.id %}> <img src = "{% static card.img_url %}"> </a>
-            {% if request.user.is_authenticated %}
-                {% if request.session.selection and request.session.listing_id%}
-                    {% if request.session.selection_dest == 'for_sale' %}
-                        {% if card in listed %}
-                            <button class="manageListing" data-action='delete' data-dest='for_sale' data-card-id={{card.id}}>Rimuovi</button>
-                        {% else %}
-                            <button class="manageListing" data-action='post' data-dest='for_sale' data-card-id={{card.id}}>Seleziona</button>
-                        {% endif %}
-                    {% elif request.session.selection_dest == 'in_exchange' %}
-                        {% if card in listed %}
-                            <button class="manageListing" data-action='delete' data-dest='in_exchange' data-card-id={{card.id}}>Rimuovi</button>
-                        {% else %}
-                            <button class="manageListing" data-action='post' data-dest='in_exchange' data-card-id={{card.id}}>Seleziona</button>
-                        {% endif %}
-                    {% endif %}
-                {% else %}
-                    {% if card in owned %}
-                        <button class="manageCollection" data-action='remove' data-card-id={{card.id}}>Rimuovi</button>
-                    {% else %}
-                        <button class="manageCollection" data-action='add' data-card-id={{card.id}}>Aggiungi</button>
-                    {% endif %}
-                    {% for wishlist in wishlists %}
-                        {% if card in wishlist.cards.all %}
-                            <button class="manageCollection" data-action='remove' data-wishlist-id={{wishlist.id}} data-card-id={{card.id}}>Rimuovi</button>
-                        {% else %}
-                            <button class="manageCollection" data-action='add' data-wishlist-id={{wishlist.id}} data-card-id={{card.id}}>Aggiungi</button>
-                        {% endif %}
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-10">
+                <p class="text-light">{{ set.name }} {{ set.cod }}</p>
+                <div class="row justify-content-center">
+                    {% for card in cards %}
+                        <div class="col-md-2 mb-4 text-center">
+                            <div class="card border-white">
+                                <a href="{% url 'collection:card_detail' game_id=set.game_id set_id=set.id card_id=card.id %}">
+                                    <img src="{% static card.img_url %}" class="card-img-top img-fluid">
+                                </a>
+                                <div class="card-body">
+                                    <p class="card-text"> {{ card.name }}</p>
+                                    <p class="card-text text-muted" style="font-size: 0.8rem;">{{card.cod}}</p>
+                                    {% if request.user.is_authenticated %}
+                                        <div>
+                                            {% if request.session.selection and request.session.listing_id %}
+                                                {% if request.session.selection_dest == 'for_sale' %}
+                                                    {% if card in listed %}
+                                                        <button class="btn btn-outline-danger btn-sm manageListing" data-action="delete" data-dest="for_sale" data-card-id="{{ card.id }}">
+                                                            <i class="fas fa-minus"></i>
+                                                        </button>
+                                                    {% else %}
+                                                        <button class="btn btn-outline-success btn-sm manageListing" data-action="post" data-dest="for_sale" data-card-id="{{ card.id }}">
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                {% elif request.session.selection_dest == 'in_exchange' %}
+                                                    {% if card in listed %}
+                                                        <button class="btn btn-outline-danger btn-sm manageListing" data-action="delete" data-dest="in_exchange" data-card-id="{{ card.id }}">
+                                                            <i class="fas fa-minus"></i>
+                                                        </button>
+                                                    {% else %}
+                                                        <button class="btn btn-outline-success btn-sm manageListing" data-action="post" data-dest="in_exchange" data-card-id="{{ card.id }}">
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% else %}
+                                                {% if card in owned %}
+                                                    <button class="btn btn-outline-danger btn-sm manageCollection" data-action="remove" data-card-id="{{ card.id }}">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                {% else %}
+                                                    <button class="btn btn-outline-success btn-sm manageCollection" data-action="add" data-card-id="{{ card.id }}">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                {% endif %}
+                                                <div class="btn-group-vertical">
+                                                    <button class="btn btn-outline-info btn-sm manageWishlist" data-toggle="modal" data-target="#wishlistDialog{{ card.id }}">
+                                                        <i class="fas fa-tasks"></i>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal per ogni carta -->
+                        <div class="modal fade" id="wishlistDialog{{ card.id }}" tabindex="-1" role="dialog" aria-labelledby="wishlistDialogLabel{{ card.id }}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="wishlistDialogLabel{{ card.id }}">Gestisci Wishlist per {{ card.name }}</h5>
+                                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {% for wishlist in wishlists %}
+                                            {% if card in wishlist.cards.all %}
+                                                <button class="btn btn-outline-danger btn-sm manageCollection" data-action="remove" data-wishlist-id="{{ wishlist.id }}" data-card-id="{{ card.id }}">
+                                                    <i class="fas fa-minus"></i> {{ wishlist.name }}
+                                                </button>
+                                            {% else %}
+                                                <button class="btn btn-outline-success btn-sm manageCollection" data-action="add" data-wishlist-id="{{ wishlist.id }}" data-card-id="{{ card.id }}">
+                                                    <i class="fas fa-plus"></i> {{ wishlist.name }}
+                                                </button>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     {% endfor %}
-                {% endif %}
-            {% endif %}
-        {% endfor %}
+                </div>
+            </div>
+        </div>
     {% endfor %}
-{% endblock %}
+</div>
+{% endblock content %}
 
 {% block script %}
 <script>
@@ -68,11 +131,17 @@
                     console.log('Success:', response);
                     if(action == 'remove'){
                         button.data('action', 'add');
-                        button.text('Aggiungi');
+                        button.toggleClass('btn-outline-danger')
+                        button.toggleClass('btn-outline-success')
+                        button.children('i').toggleClass('fa-minus')
+                        button.children('i').toggleClass('fa-plus')
                     }
                     else{
                         button.data('action', 'remove');
-                        button.text('Rimuovi');
+                        button.toggleClass('btn-outline-danger')
+                        button.toggleClass('btn-outline-success')
+                        button.children('i').toggleClass('fa-minus')
+                        button.children('i').toggleClass('fa-plus')
                     }
                 },
                 error: function(xhr, status, error) {
@@ -103,11 +172,17 @@
                         console.log('Success:', response);
                         if(action == 'delete'){
                             button.data('action', 'post');
-                            button.text('Seleziona');
+                            button.toggleClass('btn-outline-danger')
+                            button.toggleClass('btn-outline-success')
+                            button.children('i').toggleClass('fa-minus')
+                            button.children('i').toggleClass('fa-plus')
                         }
                         else{
                             button.data('action', 'delete');
-                            button.text('Rimuovi');
+                            button.toggleClass('btn-outline-danger')
+                            button.toggleClass('btn-outline-success')
+                            button.children('i').toggleClass('fa-minus')
+                            button.children('i').toggleClass('fa-plus')
                         }
                     },
                     error: function(xhr, status, error) {

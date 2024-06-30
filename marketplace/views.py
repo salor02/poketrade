@@ -23,6 +23,12 @@ class ListingsListView(ListView):
         return self.model.objects.filter(user = self.kwargs['user_id']).annotate(
             pending_transactions_count=Count('transactions', filter=Q(transactions__accepted=None))
         ).order_by('sold')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        owner = get_object_or_404(User, id=self.kwargs['user_id'])
+        context['owner'] = owner
+        return context
         
 class MarketListingListView(ListView):
     model = Listing

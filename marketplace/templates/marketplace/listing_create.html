@@ -3,5 +3,11 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    {% crispy form %}
+    <div class="container mt-5">
+        <div class="card bg-light border rounded shadow-sm">
+            <div class="card-body">
+                {% crispy form %}
+            </div>
+        </div>
+    </div>
 {% endblock content %}

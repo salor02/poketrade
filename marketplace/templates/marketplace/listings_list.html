@@ -5,37 +5,60 @@
 {% endblock head %} 
 
 {% block content %}
-    <p> <a href = {% url 'marketplace:listing_create' %} > Crea annuncio </a> </p>
-    <div id='listings'>
-    {% for item in object_list %}
-        <div>
-            <a href={% url "marketplace:listing_detail" listing_id=item.id %}> [{{item.created_at}}] {{item.description}} </a>
-            {% if request.user.is_authenticated and item.user == request.user %}
-                {% if item.sold == False %}
-                    <button class='deleteListing' id='{{item.id}}'>Rimuovi</button>
-                    {% if item.pending_transactions_count > 0 %}
-                        <a href={% url "marketplace:transaction_list" listing_id=item.id%}> Hai {{item.pending_transactions_count}}
-                        {% if item.pending_transactions_count > 1 %}
-                            proposte da valutare</a>
-                        {% else %}
-                            proposta da valutare</a>
-                        {% endif %} 
+<div class="container mt-4">
+    {% if request.user.is_authenticated and owner == request.user %}
+        <p>
+            <a href="{% url 'marketplace:listing_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Crea annuncio
+            </a>
+        </p>
+    {% endif %}
+    <div id="listings">
+        {% for item in object_list %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'marketplace:listing_detail' listing_id=item.id %}" class="text-dark">
+                            [{{ item.created_at|date:"d M Y" }}] {{ item.description }}
+                        </a>
+                    </h5>
+                    {% if request.user.is_authenticated and item.user == request.user %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            {% if item.sold == False %}
+                                <button class="btn btn-outline-danger deleteListing" id="{{ item.id }}">
+                                    <i class="fas fa-trash-alt"></i> Rimuovi
+                                </button>
+                                {% if item.pending_transactions_count > 0 %}
+                                    <a href="{% url 'marketplace:transaction_list' listing_id=item.id %}" class="btn btn-outline-warning">
+                                        <i class="fas fa-exclamation-circle"></i> Hai {{ item.pending_transactions_count }}
+                                        {% if item.pending_transactions_count > 1 %}
+                                            proposte da valutare
+                                        {% else %}
+                                            proposta da valutare
+                                        {% endif %}
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-success"><i class="fas fa-check"></i> Articolo venduto</span>
+                                <a href="{% url 'marketplace:transaction_list' listing_id=item.id %}" class="btn btn-outline-info">
+                                    <i class="fas fa-history"></i> Visualizza storico proposte
+                                </a>
+                            {% endif %}
+                        </div>
                     {% endif %}
-                {% else %}
-                    Articolo venduto
-                    <a href={% url "marketplace:transaction_list" listing_id=item.id%}> Visualizza storico proposte </a>
-                {% endif %}
-            {% endif %}
-        </div>
-    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
     </div>
+</div>
 {% endblock %}
+
 
 {% if request.user.is_authenticated and item.user == request.user %}
     {% block script %}
     <script>
         $('#listings').on('click','.deleteListing',function(){
-            var parent = $(this).parent('div')
+            var parent = $(this).closest('.card')
 
             $.ajax({
                 type: 'DELETE',

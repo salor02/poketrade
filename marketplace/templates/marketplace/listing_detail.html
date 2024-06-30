@@ -5,31 +5,59 @@
 {% endblock head %} 
 
 {% block content %}
-    <a href={% url "user:account_detail" user_id=object.user.id %}> Venditore {{object.user.username}} </a>
-    <div>
-        <h3> Carte offerte </h3>
-        {% for card in object.cards_for_sale.all %}
-            <div>
-                <img src = "{% static card.img_url %}">
-                <p> {{card.cod}} </p>
-            </div>
-        {% endfor %}
-    </div>
-    <div>
-        <h3> Carte richieste in scambio </h3>
-        {% for card in object.cards_in_exchange.all %}
-            <div>
-                <img src = "{% static card.img_url %}">
-                <p> {{card.cod}} </p>
-            </div>
-        {% endfor %}
-    </div>
-    <div> Descrizione: {{object.description}} </div>
-    {% if request.user.is_authenticated and object.sold == False%}
-        {% if object.user == request.user %}
-            <a href={% url 'marketplace:listing_update' listing_id=object.id %}> Modifica </a>
-        {% else %}
-            <a href={% url "marketplace:transaction_create" listing_id=object.id %}> Acquista </a>
+<div class="container mt-4 text-light">
+    <div class="d-flex align-items-center mb-4">
+        {% if object.user.profile.profile_pic %}
+            <img src="{{ object.user.profile.profile_pic.url }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;" alt="{{ object.user.username }}">
         {% endif %}
+        <a href="{% url 'user:account_detail' user_id=object.user.id %}" class="ms-2 text-decoration-none text-light">
+            <i class="fas fa-user"></i> Venditore @{{ object.user.username }}
+        </a>
+    </div>
+    
+    <div>
+        <h3><i class="fas"></i> Carte offerte</h3>
+        <div class="row">
+            {% for card in object.cards_for_sale.all %}
+                <div class="col-md-2 mb-3 text-center">
+                    <img src="{% static card.img_url %}" class="img-fluid">
+                    <p class="mt-2">{{ card.cod }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div>
+        <h3><i class="fas fa-exchange-alt"></i> Carte richieste in scambio</h3>
+        <div class="row">
+            {% for card in object.cards_in_exchange.all %}
+                <div class="col-md-2 mb-3 text-center">
+                    <img src="{% static card.img_url %}" class="img-fluid">
+                    <p class="mt-2">{{ card.cod }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="mt-4 p-3 border border-white rounded">
+        <h5><i class="fas fa-info-circle"></i> Descrizione</h5>
+        <p>{{ object.description }}</p>
+    </div>
+    
+    {% if request.user.is_authenticated and not object.sold %}
+        <div class="mt-3">
+            {% if object.user == request.user %}
+                <a href="{% url 'marketplace:listing_update' listing_id=object.id %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Modifica
+                </a>
+            {% else %}
+                <a href="{% url 'marketplace:transaction_create' listing_id=object.id %}" class="btn btn-success">
+                    <i class="fas fa-shopping-cart"></i> Acquista
+                </a>
+            {% endif %}
+        </div>
     {% endif %}
-{% endblock content %}
+</div>
+{% endblock %}
+
+

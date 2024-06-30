@@ -3,16 +3,14 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <p>
-        <a href={% url "user:account_detail" user_id=object.user_src.id %}> {{object.user_src.username}} </a>
-        {% if object.user_src == object.transaction.buyer %}
-            ha acquistato da
-        {% elif object.user_src == object.transaction.listing.user %}
-            ha venduto a
-        {% endif %}
-        <a href={% url "user:account_detail" user_id=object.user_dst.id %}> {{object.user_dst.username}} </a>
-    </p>
-
-    {% crispy form %}
-
+    <div class="container mt-5">
+        <div class="card bg-light border rounded shadow-sm">
+            <p class = "card-title"> Feedback per
+                <a href="{% url "user:account_detail" user_id=object.user_dst.id %}" class="text-dark text-decoration-none"> @{{ object.user_dst.username }} </a>
+                </p>
+            <div class="card-body">
+                {% crispy form %}
+            </div>
+        </div>
+    </div>
 {% endblock content %}

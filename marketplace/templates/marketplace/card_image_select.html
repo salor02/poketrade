@@ -1,16 +1,24 @@
 {% load static %}
 
-<h3> {{fieldset.legend }} </h3>
-{% for checkbox in field %}
-    <div class="checkbox">
-        {% for card in field.field.queryset %}
-            {% if card.pk == checkbox.data.value %}
-                <label for="{{ checkbox.id_for_label }}">
-                    {{ checkbox.tag }}
-                    <img src="{% static card.img_url %}" alt="{{ card.name }}" width="100">
-                    {{ card.name }}
-                </label>
-            {% endif %}
+<div class="container mt-4 text-light">
+    <h3 class="mb-4">{{ fieldset.legend }}</h3>
+    <div class="row">
+        {% for checkbox in field %}
+            {% for card in field.field.queryset %}
+                {% if card.pk == checkbox.data.value %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-dark text-light border-light">
+                            <div class="card-body text-center">
+                                <label for="{{ checkbox.id_for_label }}">
+                                    {{ checkbox.tag }}
+                                    <img src="{% static card.img_url %}" alt="{{ card.name }}" class="img-fluid my-2" style="max-height: 150px;">
+                                    <p>{{ card.name }}</p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
         {% endfor %}
     </div>
-{% endfor %}
+</div>

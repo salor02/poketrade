@@ -1,36 +1,71 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
-    <img src={{object.profile.profile_pic.url}}>
-    <p> {{object.username}} </p>
-    <p> {{object.profile.bio}} </p>
-    <p> Telefono: {{object.profile.phone_number}} </p>
+    <div class="container">
+        <div class="text-center mb-4">
+            <div class="profile-pic-container">
+                {% if object.profile.profile_pic.url %}
+                    <img src="{{ object.profile.profile_pic.url }}" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <img src="{% static "sad-pikachu.gif" %}" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                {% endif %}
+            </div>
+            <p class="text-light"> {{ object.username }} </p>
+            <p class="text-light"> {{ object.profile.bio }} </p>
+            <p class="text-light"> Telefono: {{ object.profile.phone_number }} </p>
 
-    {% if avg_rating %}
-        <h3> Valutazione media: {{avg_rating}} </h3>
-        <a href={% url "marketplace:feedback_list" user_id=object.id %}> Visualizza tutti i feedback </a>
-    {% else %}
-        <p> Nessun feedback disponibile </p>
-    {% endif %}
-    
-    <h3> <a href = {% url "collection:collection" user_id=object.id %}> Collezione </a> </h3>
-    {% for set, cards_data in cards_by_set.items %}
-        <p> {{set.name}} {{set.cod}} {{cards_data.num_owned_cards}} {{cards_data.num_set_cards}} {{cards_data.completing_score}}% </p>
-    {% endfor %}
+            <div class="border border-light rounded p-3 mb-4">
+                <h3 class="text-light"> Marketplace </h3>
+                <div class="mt-3">
+                {% if avg_rating %}
+                    <h5 class="text-light"> Valutazione media: {{ avg_rating }} </h5>
+                    <a href="{% url "marketplace:feedback_list" user_id=object.id %}" class="btn btn-outline-light">
+                        <i class="fas fa-comment-alt"></i> Visualizza tutti i feedback
+                    </a>
+                {% else %}
+                    <p class="text-light"> Nessun feedback disponibile </p>
+                {% endif %}
+                    <a href="{% url "marketplace:listings_list" user_id=object.id %}" class="btn btn-outline-light ml-2">
+                        <i class="fas fa-list"></i> Visualizza annunci
+                    </a>
+                </div>
+            </div>
 
-    <h3> Wishlists </h3>
-    <div id='wishlists'>
-    {% for item in object.wishlists.all %}
-        <p> <a href = {% url "collection:wishlist_detail" wishlist_id=item.id%}> {{item.name}} </a> </p>
-    {% endfor %}
+            <div class="border border-light rounded p-3 mb-4">
+                <h3 class="text-light"> Collezione </h3>
+                {% for set, cards_data in cards_by_set.items %}
+                    <div class="mb-3">
+                        <h5 class="text-light">{{ set.name }} {{ set.cod }}</h5>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ cards_data.completing_score }}%;" aria-valuenow="{{ cards_data.completing_score }}" aria-valuemin="0" aria-valuemax="100">
+                                {{ cards_data.completing_score }}%
+                            </div>
+                        </div>
+                        <p class="text-light mt-2">{{ cards_data.num_owned_cards }} / {{ cards_data.num_set_cards }} carte possedute</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="border border-light rounded p-3 mb-4">
+                <h3 class="text-light"> Wishlists </h3>
+                <div id="wishlists">
+                    {% for item in object.wishlists.all %}
+                        <p class="text-light"> <a href="{% url "collection:wishlist_detail" wishlist_id=item.id %}" class="text-light"> {{ item.name }} </a> </p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if request.user.is_authenticated and object.id == request.user.id %}
+                <div class="p-3 mb-4 d-flex align-items-center justify-content-between">
+                    <form method="post" action="{% url 'user:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    </form>
+                    <a href="{% url 'user:account_edit' %}" class="btn btn-outline-light"><i class="fas fa-pencil-alt"></i> Modifica</a>
+                </div>
+            {% endif %}
+        </div>
     </div>
-
-    {% if request.user.is_authenticated and object.id == request.user.id %}
-        <form method="post" action="{% url 'user:logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
-        <a href="{% url 'user:account_edit' %}"> Modifica </a>
-    {% endif %}
-    
 {% endblock content %}

@@ -1,18 +1,32 @@
+{% load static %}
+
 {% block content %}
-    <p>
-        <a href={% url "user:account_detail" user_id=object.user_src.id %}> {{object.user_src.username}} </a>
-        {% if object.user_src == object.transaction.buyer %}
-            ha acquistato da
-        {% elif object.user_src == object.transaction.listing.user %}
-            ha venduto a
-        {% endif %}
-        <a href={% url "user:account_detail" user_id=object.user_dst.id %}> {{object.user_dst.username}} </a>
-    </p>
+    <div class="container">
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-8">
+                <div class="border border-light rounded p-3 mb-4">
+                    <div class="d-flex align-items-center">
+                        {% if object.user_src.profile.profile_pic.url %}
+                            <img src="{{ object.user_src.profile.profile_pic.url }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;" alt="{{ object.user_src.username }}">
+                        {% endif %}
+                        <div class="ml-3">
+                            <a href="{% url "user:account_detail" user_id=object.user_src.id %}" class="text-light"> @{{ object.user_src.username }} </a>
+                            {% if object.user_src == object.transaction.buyer %}
+                                <strong class="text-light">come ACQUIRENTE</strong>
+                            {% elif object.user_src == object.transaction.listing.user %}
+                                <strong class="text-light">come VENDITORE</strong>
+                            {% endif %}
+                        </div>
+                    </div>
 
-    <p> Voto: {{object.rating}} </p>
-    {% if object.comment %}
-        <h4> Commento </h4>
-        <p> {{object.comment}} </p>
-    {% endif %}
-
+                    <p class="text-light mt-2"> Voto: {{ object.rating }} </p>
+                    
+                    {% if object.comment %}
+                        <h4 class="text-light"> Commento </h4>
+                        <p class="text-light"> {{ object.comment }} </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

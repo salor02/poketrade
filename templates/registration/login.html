@@ -3,8 +3,14 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <form method="post"> {% csrf_token %}
-        {{form | crispy}}
-        <input type="submit" class="btn btn-success" value="Login">
-    </form>
+    <div class="container mt-5">
+        <div class="card bg-light border rounded shadow-sm">
+            <div class="card-body">
+                <form method="post"> {% csrf_token %}
+                    {{form | crispy}}
+                    <input type="submit" class="btn btn-success" value="Login">
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

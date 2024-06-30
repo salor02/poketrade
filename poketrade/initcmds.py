@@ -51,8 +51,15 @@ def init_db():
                 name=f'Dummy Card {i}',
                 cod=f'CARD{i:02d}/{set.cod}',
                 img_url=f'/dummy-card.png',
+                move1=f'Dummy move {i}',
+                description=f'Dummy description {i}',
                 set=set
             )
+
+            #aggiunge la seconda mossa a una carta su 4
+            if i%4 == 0:
+                new_card.move2 = f'Dummy second move {i}'
+                new_card.save()
 
             #aggiunge una carta ogni 10 alle carte possedute dall'utente dummy
             if i%10 == 0:

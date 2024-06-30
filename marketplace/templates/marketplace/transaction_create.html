@@ -3,7 +3,25 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <a href={% url "user:account_detail" user_id=listing.user.id %}> Venditore {{listing.user.username}} </a>
-    <p> Prezzo richiesto {{listing.price}} </a>
-    {% crispy form %}
+<div class="container mt-4 text-light">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-10">
+            <h4>
+                <a href="{% url 'user:account_detail' user_id=listing.user.id %}" class="text-light d-flex align-items-center">
+                    {% if listing.user.profile.profile_pic %}
+                        <img src="{{ listing.user.profile.profile_pic.url }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ listing.user.username }}">
+                    {% else %}
+                        <i class="fas fa-user me-2"></i>
+                    {% endif %}
+                    Venditore: {{ listing.user.username }}
+                </a>
+            </h4>
+            <p class="text-light"><i class="fas fa-tags"></i> Prezzo richiesto: {{ listing.price }} €</p>
+        </div>
+    </div>
+    <div class="border border-light rounded p-3 mb-4">
+        {% crispy form %}
+    </div>
+</div>
 {% endblock content %}
+

@@ -7,24 +7,40 @@
 {% endblock head %} 
 
 {% block content %}
+<div class="container mt-4 text-light">
     <div>
-        <h3> Carte offerte </h3>
-        {% for card in object.cards_for_sale.all %}
-            <div>
-                <img src = "{% static card.img_url %}">
-                <p> {{card.cod}} </p>
-            </div>
-        {% endfor %}
+        <h3><i class="fas"></i> Carte offerte</h3>
+        <div class="row">
+            {% for card in object.cards_for_sale.all %}
+                <div class="col-md-2 mb-3 text-center">
+                    <img src="{% static card.img_url %}" class="img-fluid">
+                    <p class="mt-2">{{ card.cod }}</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
+    
     <div>
-        <h3> Carte richieste in scambio </h3>
-        {% for card in object.cards_in_exchange.all %}
-            <div>
-                <img src = "{% static card.img_url %}">
-                <p> {{card.cod}} </p>
-            </div>
-        {% endfor %}
+        <h3><i class="fas fa-exchange-alt"></i> Carte richieste in scambio</h3>
+        <div class="row">
+            {% for card in object.cards_in_exchange.all %}
+                <div class="col-md-2 mb-3 text-center">
+                    <img src="{% static card.img_url %}" class="img-fluid">
+                    <p class="mt-2">{{ card.cod }}</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-    <a href={% url "marketplace:start_selection" listing_id=object.id %}> Modifica carte </a>
-    {% crispy form %}
-{% endblock content %}
+    
+    <div class="mt-4">
+        <a href="{% url 'marketplace:start_selection' listing_id=object.id %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Modifica carte
+        </a>
+    </div>
+    
+    <div class="mt-4">
+        {% crispy form %}
+    </div>
+</div>
+{% endblock %}
+

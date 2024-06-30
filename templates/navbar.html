@@ -1,31 +1,44 @@
+{% load static %}
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{% url "home" %}">PokeTrade</a>
+    <a class="navbar-brand" href="{% url "home" %}">
+        <img src="{% static 'logo.png' %}" alt="Logo" height="30">
+    </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                {% if request.user.is_authenticated %}
+            
+            {% if request.user.is_authenticated %}
+                <li class="nav-item">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> {{request.user.username}} </a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if request.user.profile.profile_pic %}
+                                <img src="{{request.user.profile.profile_pic.url}}" style="height: 30px; width: 30px; border-radius: 50%;">
+                            {% endif %}
+                            {{request.user.username}}
+                        </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href={% url 'user:account_detail' user_id=request.user.id %}>Account</a></li>
-                            <li><a class="dropdown-item" href={% url 'collection:collection' user_id=request.user.id%}>Collezione</a></li>
-                            <li><a class="dropdown-item" href={% url 'collection:wishlist_list' %}>Wishlist</a></li>
-                            <li><a class="dropdown-item" href={% url 'marketplace:listings_list' user_id=request.user.id%}>Miei annunci</a></li>
-                            <li><a class="dropdown-item" href={% url 'marketplace:accepted_transaction_list' %}>Vendite</a></li>
-                            <li><a class="dropdown-item" href={% url 'marketplace:pending_transaction_list' %}>Proposte inviate</a></li>
-                            <li><a class="dropdown-item" href={% url 'marketplace:purchased_transaction_list' %}>Acquisti</a></li>
+                            <li><a class="dropdown-item" href="{% url 'user:account_detail' user_id=request.user.id %}">Account</a></li>
+                            <li><a class="dropdown-item" href="{% url 'collection:collection' user_id=request.user.id%}">Collezione</a></li>
+                            <li><a class="dropdown-item" href="{% url 'collection:wishlist_list' %}">Wishlist</a></li>
+                            <li><a class="dropdown-item" href="{% url 'marketplace:listings_list' user_id=request.user.id%}">Miei annunci</a></li>
+                            <li><a class="dropdown-item" href="{% url 'marketplace:accepted_transaction_list' %}">Vendite</a></li>
+                            <li><a class="dropdown-item" href="{% url 'marketplace:pending_transaction_list' %}">Proposte inviate</a></li>
+                            <li><a class="dropdown-item" href="{% url 'marketplace:purchased_transaction_list' %}">Acquisti</a></li>
                         </ul>
                     </li>
-                {% else %}
-                        <a class="nav-link" href="{% url "user:login" %}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'user:register' %}">Registrati</a>
-                {% endif %}
-            </li>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user:login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user:register' %}">Registrati</a>
+                </li>
+            {% endif %}
+            
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'collection:game_list' %}">Esplora</a>
             </li>
@@ -35,4 +48,3 @@
         </ul>
     </div>
 </nav>
-  
