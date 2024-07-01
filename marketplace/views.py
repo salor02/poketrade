@@ -4,7 +4,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from .models import *
-from .forms import ListingCrispyForm, ListingUpdateForm, TransactionCreateForm, TransactionUpdateForm, FeedbackCreateForm, SearchForm
+from .forms import ListingCreateForm, ListingUpdateForm, TransactionCreateForm, TransactionUpdateForm, FeedbackCreateForm, SearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
@@ -91,7 +91,7 @@ class MarketListingListView(ListView):
     
 class ListingCreateView(LoginRequiredMixin, CreateView):
     model = Listing
-    form_class = ListingCrispyForm
+    form_class = ListingCreateForm
     template_name = 'marketplace/listing_create.html'
 
     def form_valid(self, form):

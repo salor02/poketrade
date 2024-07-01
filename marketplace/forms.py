@@ -7,7 +7,7 @@ from .models import *
 from .urls import *
 from api.urls import *
 
-class ListingCrispyForm(forms.ModelForm):
+class ListingCreateForm(forms.ModelForm):
 
     helper = FormHelper()
     helper.form_method = 'POST'

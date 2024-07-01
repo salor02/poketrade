@@ -107,7 +107,7 @@ def collection_manage(request):
     if 'wishlist_id' in request.POST:
         try:
             wishlist = Wishlist.objects.get(pk=request.POST['wishlist_id'], user = request.user)
-        except Wishlist.DoesNotExists:
+        except Wishlist.DoesNotExist:
             return HttpResponseBadRequest(f"Non esiste nessuna wishlist con ID {request.POST['wishlist_id']} per l'utente attuale")
         
     if 'card_id' in request.POST and 'action' in request.POST:
