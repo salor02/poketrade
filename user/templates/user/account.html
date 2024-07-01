@@ -20,7 +20,9 @@
             </div>
             <p class="text-light"> {{ object.username }} </p>
             <p class="text-light"> {{ object.profile.bio }} </p>
-            <p class="text-light"> Telefono: {{ object.profile.phone_number }} </p>
+            {% if object.profile.phone_number %}
+                <p class="text-light"> Telefono: {{ object.profile.phone_number }} </p>
+            {% endif %}
 
             <div class="border border-light rounded p-3 mb-4">
                 <h3 class="text-light"> Marketplace </h3>

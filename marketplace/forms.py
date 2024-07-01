@@ -3,8 +3,9 @@ from django.urls import reverse_lazy
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Row, Column, Hidden, Fieldset, Field, Div, ButtonHolder
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 from .models import *
-from .urls import *
+#from .urls import *
 from api.urls import *
 
 class ListingCreateForm(forms.ModelForm):
@@ -68,6 +69,8 @@ class TransactionCreateForm(forms.ModelForm):
         if listing_id is not None:
             self.fields['proposed_cards'].queryset = get_object_or_404(Listing, id=listing_id).cards_in_exchange.all()
             self.fields['wanted_cards'].queryset = get_object_or_404(Listing, id=listing_id).cards_for_sale.all()
+        else:
+            raise Http404
 
     helper = FormHelper()
     helper.form_method = 'POST'

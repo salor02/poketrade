@@ -1,11 +1,13 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
+from django.test import TestCase, Client, RequestFactory
+from django.contrib.auth.models import User, AnonymousUser
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 from .models import *
 from collection.models import *
 from .forms import TransactionCreateForm
+from marketplace.utils import set_selection_mode, clear_session
 
-"""class TransactionCreateFormTests(TestCase):
+class TransactionCreateFormTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='testpass')
         self.user_other = User.objects.create_user(username='otheruser', password='otherpass')
@@ -45,6 +47,34 @@ from .forms import TransactionCreateForm
         form = TransactionCreateForm(data=form_data, listing_id=self.listing.id)
         self.assertFalse(form.is_valid())
 
+    def test_form_invalid_no_proposed_cards(self):
+        form_data = {
+            'proposed_price': 50,
+            'wanted_cards': [self.card2.id]
+        }
+        form = TransactionCreateForm(data=form_data, listing_id=self.listing.id)
+        self.assertTrue(form.is_valid())
+
+    def test_listing_not_found(self):
+        form_data = {
+            'proposed_price': 50,
+            'proposed_cards': [self.card1.id],
+            'wanted_cards': [self.card2.id]
+        }
+
+        with self.assertRaises(Http404):
+            form = TransactionCreateForm(data=form_data, listing_id=99999999)
+
+    def test_listing_is_none(self):
+        form_data = {
+            'proposed_price': 50,
+            'proposed_cards': [self.card1.id],
+            'wanted_cards': [self.card2.id]
+        }
+
+        with self.assertRaises(Http404):
+            form = TransactionCreateForm(data=form_data, listing_id=None)
+
     def test_form_proposed_cards_queryset(self):
         form = TransactionCreateForm(listing_id=self.listing.id)
         self.assertEqual(list(form.fields['proposed_cards'].queryset), list(self.listing.cards_in_exchange.all()))
@@ -52,55 +82,72 @@ from .forms import TransactionCreateForm
     def test_form_wanted_cards_queryset(self):
         form = TransactionCreateForm(listing_id=self.listing.id)
         self.assertEqual(list(form.fields['wanted_cards'].queryset), list(self.listing.cards_for_sale.all()))
-"""
 
-from django.test import TestCase, Client
-from marketplace.utils import set_selection_mode, clear_session
-
-class SelectionModeTests(TestCase):
+class SetSelectionModeTests(TestCase):
     def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.listing = Listing.objects.create(user=self.user, description='Test Listing', price=100)
-        self.client.login(username='testuser', password='testpassword')
+        # Create a user
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        # Create a listing associated with the user
+        self.listing = Listing.objects.create(user=self.user, description='Test Listing', price=345)
+        # Set up the request factory
+        self.factory = RequestFactory()
 
-    def test_set_selection_mode_authenticated(self):
-        session = self.client.session
-        response = set_selection_mode(self.client, True, 'for_sale', self.listing.id)
-        self.assertTrue(response)
-        self.assertTrue(session['selection'])
-        self.assertEqual(session['selection_dest'], 'for_sale')
-        self.assertEqual(session['listing_id'], self.listing.id)
+    def test_user_not_authenticated(self):
+        request = self.factory.get('/')
+        request.user = AnonymousUser() # Unauthenticated user
+        request.session = {}
+        response = set_selection_mode(request, True, 'destination', self.listing.id)
 
-    def test_set_selection_mode_unauthenticated(self):
-        self.client.logout()
-        response = set_selection_mode(self.client, True, 'for_sale', self.listing.id)
         self.assertFalse(response)
 
-    def test_set_selection_mode_clear_session(self):
-        session = self.client.session
-        response = set_selection_mode(self.client, False)
+    def test_missing_session_keys(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {'selection_dest': 'old_dest', 'listing_id': 123}
+        response = set_selection_mode(request, True, 'destination', self.listing.id)
+
         self.assertTrue(response)
-        self.assertFalse(session['selection'])
-        self.assertIsNone(session['selection_dest'])
-        self.assertIsNone(session['listing_id'])
+        self.assertTrue(request.session['selection'])
+        self.assertEqual(request.session['selection_dest'], 'destination')
+        self.assertEqual(request.session['listing_id'], self.listing.id)
 
-    def test_set_selection_mode_missing_params(self):
-        session = self.client.session
-        response = set_selection_mode(self.client, True)
+    def test_status_false(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {'selection_dest': 'old_dest', 'listing_id': 123, 'selection': True}
+        response = set_selection_mode(request, False, 'destination', self.listing.id)
+
+        self.assertTrue(response)
+        self.assertIsNone(request.session['selection_dest'])
+        self.assertIsNone(request.session['listing_id'])
+        self.assertFalse(request.session['selection'])
+
+    def test_missing_parameters(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {}
+        response = set_selection_mode(request, True)
+
         self.assertFalse(response)
-        self.assertFalse(session['selection'])
-        self.assertIsNone(session['selection_dest'])
-        self.assertIsNone(session['listing_id'])
+        self.assertIsNone(request.session['selection_dest'])
+        self.assertIsNone(request.session['listing_id'])
+        self.assertFalse(request.session['selection'])
 
-    def test_clear_session(self):
-        session = self.client.session
-        session['selection'] = True
-        session['selection_dest'] = 'for_sale'
-        session['listing_id'] = self.listing.id
-        clear_session(session)
-        self.assertFalse(session['selection'])
-        self.assertIsNone(session['selection_dest'])
-        self.assertIsNone(session['listing_id'])
+    def test_successful_set_selection_mode(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {}
+        response = set_selection_mode(request, True, 'destination', self.listing.id)
 
+        self.assertTrue(response)
+        self.assertTrue(request.session['selection'])
+        self.assertEqual(request.session['selection_dest'], 'destination')
+        self.assertEqual(request.session['listing_id'], self.listing.id)
 
+    def test_listing_not_found(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {}
+        
+        with self.assertRaises(Http404):
+            response = set_selection_mode(request, True, 'destination', 9999999999)  # Non-existent listing ID
