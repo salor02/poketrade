@@ -29,6 +29,10 @@ class ListingViewSet(viewsets.ModelViewSet):
         listing = self.get_object()
         card_id = request.data.get('card_id')
         selection_dest = request.data.get('selection_dest')
+
+        if not selection_dest:
+            return HttpResponseBadRequest('Non è stata specificata nessuna destinazione per la selezione')
+
         try:
             card = Card.objects.get(pk=card_id)
         except Card.DoesNotExist:

@@ -60,7 +60,7 @@ class CollectionManageViewTests(TestCase):
         self.assertEqual(response.content.decode(), 'Il parametro action o card_id risultano mancanti')
 
     def test_non_existent_card(self):
-        response = self.client.post(self.url, {'card_id': 999, 'action': 'add'})
+        response = self.client.post(self.url, {'card_id': 999999999999, 'action': 'add'})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.content.decode(), 'La carta con ID fornito non esiste')
 
