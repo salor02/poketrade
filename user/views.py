@@ -56,9 +56,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'user/account_edit.html'
 
     def get_object(self, queryset=None):
-        # Ottieni l'utente corrente
         user = self.request.user
-        # Prova a ottenere l'oggetto Profile, se non esiste, creane uno nuovo
         profile, created = Profile.objects.get_or_create(user=user)
         return profile
 

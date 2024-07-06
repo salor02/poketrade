@@ -37,6 +37,7 @@ class ListingsListView(ListView):
 class MarketListingListView(ListView):
     model = Listing
     template_name = "marketplace/market.html"
+    paginate_by = 5
 
     def search(self):
         search_query = self.request.GET.get('search','').upper()

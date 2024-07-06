@@ -12,14 +12,17 @@
             {% endif %}
 
             <div class="profile-pic-container">
-                {% if object.profile.profile_pic.url %}
+                {% if object.profile.profile_pic %}
                     <img src="{{ object.profile.profile_pic.url }}" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                 {% else %}
                     <img src="{% static "sad-pikachu.gif" %}" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                 {% endif %}
             </div>
-            <p class="text-light"> {{ object.username }} </p>
-            <p class="text-light"> {{ object.profile.bio }} </p>
+            <h5 class="text-light mt-2"> {{ object.username }} </h5>
+
+            {% if object.profile.bio %}
+                <p class="text-light"> {{ object.profile.bio }} </p>
+            {% endif %}
             {% if object.profile.phone_number %}
                 <p class="text-light"> Telefono: {{ object.profile.phone_number }} </p>
             {% endif %}
@@ -45,15 +48,18 @@
                 <h3 class="text-light"> Collezione </h3>
                 {% for set, cards_data in cards_by_set.items %}
                     <div class="mb-3">
-                        <h5 class="text-light">{{ set.name }} {{ set.cod }}</h5>
+                        <h5 class="text-light"><a class='text-light' href={% url "collection:set_list" game_id=set.game.id %}>{{set.game.name}}</a> &raquo; 
+                            <a class='text-light' href={% url "collection:card_list" game_id=set.game.id set_id=set.id %}> [{{ set.cod }}] <strong> {{ set.name }} </strong> </a></h5>
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: {{ cards_data.completing_score }}%;" aria-valuenow="{{ cards_data.completing_score }}" aria-valuemin="0" aria-valuemax="100">
-                                {{ cards_data.completing_score }}%
+                            <div class="progress-bar" role="progressbar" style="width:{{ cards_data.completing_score|floatformat:0 }}%;" aria-valuenow="{{ cards_data.completing_score|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100">
                             </div>
                         </div>
                         <p class="text-light mt-2">{{ cards_data.num_owned_cards }} / {{ cards_data.num_set_cards }} carte possedute</p>
                     </div>
                 {% endfor %}
+                <a href="{% url "collection:collection" user_id=object.id %}" class="btn btn-outline-light ml-2">
+                    <i class="fas fa-list"></i> Visualizza collezione completa
+                </a>
             </div>
 
             <div class="border border-light rounded p-3 mb-4">

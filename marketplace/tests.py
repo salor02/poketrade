@@ -85,16 +85,12 @@ class TransactionCreateFormTests(TestCase):
 
 class SetSelectionModeTests(TestCase):
     def setUp(self):
-        # Create a user
         self.user = User.objects.create_user(username='testuser', password='testpass')
-        # Create a listing associated with the user
         self.listing = Listing.objects.create(user=self.user, description='Test Listing', price=345)
-        # Set up the request factory
         self.factory = RequestFactory()
 
     def test_user_not_authenticated(self):
         request = self.factory.get('/')
-        request.user = AnonymousUser() # Unauthenticated user
         request.session = {}
         response = set_selection_mode(request, True, 'destination', self.listing.id)
 
@@ -150,4 +146,4 @@ class SetSelectionModeTests(TestCase):
         request.session = {}
         
         with self.assertRaises(Http404):
-            response = set_selection_mode(request, True, 'destination', 9999999999)  # Non-existent listing ID
+            response = set_selection_mode(request, True, 'destination', 9999999999) 

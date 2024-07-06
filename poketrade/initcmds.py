@@ -1,27 +1,24 @@
 from collection.models import *
+from user.models import *
+from marketplace.models import *
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 import json
+import random
 
-def erase_db():
-    print("Cancello il DB")
+def erase_collection_db():
+    print("Cancello il DB collection")
     Game.objects.all().delete()
     Set.objects.all().delete()
 
-def init_db():
+def init_collection_db():
 
     if len(Game.objects.all()) != 0:
         return
-    
-    # Creazione di un nuovo utente
-    try:
-        dummy_user = User.objects.get(username='ciao')
-    except User.DoesNotExist:
-        dummy_user = User.objects.create_user(username='ciao', email='ciao@example.com', password='password123')
 
     game = Game()
     game.name = "Pokemon"
-    game.img_url = "/dummy-logo.png"
+    game.img_url = "/pokemon-logo.png"
     game.save()
     
     f = open('./scraper/scraper_data/scraper.json') #da sistemare
@@ -51,7 +48,50 @@ def init_db():
         
     f.close()
 
-    print('DB popolato')
+    print('DB collection popolato')
+
+def erase_user_DB():
+    print('Cancello DB utenti')
+    User.objects.all().delete()
+
+def init_user_DB():
+    print('Inizializzazione utenti')
+    names = ['Brock', 'Ash', 'Lucinda', 'Camilla', 'Rosso']
+    users = list()
+    for name in names:
+        try:
+            users.append(User.objects.get(username=name))
+        except User.DoesNotExist:
+            users.append(User.objects.create_user(username=name, password='prova'))
+    print('Utenti creati correttamente')
+
+def get_random_cards(queryset, n=1):
+    card_ids = queryset.values_list('id', flat=True)
+    return queryset.filter(id__in=random.sample(list(card_ids), n))
+
+def erase_marketplace_db():
+    print('Cancello il DB marketplace')
+    Listing.objects.all().delete()
+    Feedback.objects.all().delete()
+
+def init_marketplace_db():
+    
+    users = User.objects.all()
+
+    for user in users:
+        print(f'Creazione annunci per utente {user.username}')
+        for _ in range(5):
+            listing = Listing.objects.create(
+                description=f"Descrizione dummy da {user.username}",
+                price=round(random.uniform(10, 500), 2),
+                published=random.choice([True, False]),
+                user=user
+            )
+            listing.cards_for_sale.set(get_random_cards(Card.objects.all(), n=random.randint(1, 15)))
+            listing.cards_in_exchange.set(get_random_cards(Card.objects.all(), n=random.randint(1, 15)))
+            listing.save()
+    
+    print('DB marketplace popolato')
     
 
     

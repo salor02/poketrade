@@ -4,6 +4,12 @@
 
 {% block content %}
     <div class="container mt-5">
+        {% if object_list.count == 0 %}
+            <div class="alert alert-danger mt-4" role="alert">
+                Non hai ricevuto ancora nessuna proposta
+            </div>
+        {% endif %}
+
         {% if request.GET.created == '1' %}
             <div class="alert alert-success" role="alert">
                 Proposta inviata con successo!

@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 import collection
 import collection.urls
 
+#non funzionante
 class SelectionModeMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response

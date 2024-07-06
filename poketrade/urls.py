@@ -34,4 +34,8 @@ urlpatterns = [
 urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 #erase_db()
-init_db()
+init_collection_db()
+#erase_user_DB()
+#init_user_DB()
+#erase_marketplace_db()
+#init_marketplace_db()

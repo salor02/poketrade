@@ -142,7 +142,6 @@ coverage.xml
 __pycache__/
 local_settings.py
 db.sqlite3-journal
-media
 
 # immagini carte
 static/img

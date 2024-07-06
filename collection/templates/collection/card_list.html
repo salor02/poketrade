@@ -16,8 +16,9 @@
 
     {% for set, cards in cards_by_set.items %}
         <div class="row justify-content-center mb-4">
-            <div class="col-md-10">
-                <h3 class="text-light">[{{ set.cod }}] <strong> {{ set.name }} </strong></h3>
+            <div class="col-md-10 mt-3">
+                <h3 class="text-light"> <a class='text-light' href={% url "collection:set_list" game_id=set.game.id %}>{{set.game.name}}</a> &raquo; 
+                    <a class='text-light' href={% url "collection:card_list" game_id=set.game.id set_id=set.id %}> [{{ set.cod }}] <strong> {{ set.name }} </strong> </a> </h3>
                 <div class="row justify-content-center">
                     {% for card in cards %}
                         <div class="col-md-2 mb-4 text-center">
