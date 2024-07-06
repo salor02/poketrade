@@ -17,7 +17,7 @@
     {% for set, cards in cards_by_set.items %}
         <div class="row justify-content-center mb-4">
             <div class="col-md-10">
-                <p class="text-light">{{ set.name }} {{ set.cod }}</p>
+                <h3 class="text-light">[{{ set.cod }}] <strong> {{ set.name }} </strong></h3>
                 <div class="row justify-content-center">
                     {% for card in cards %}
                         <div class="col-md-2 mb-4 text-center">

@@ -78,7 +78,7 @@ class MarketListingListView(ListView):
                     cards_in_collection=Count('cards_in_exchange', filter=Q(cards_in_exchange__owners=self.request.user), distinct=True)
                 ).annotate(
                     total_score=F('cards_in_wishlist') + F('cards_in_collection')
-                ).order_by('-total_score','-created_at')
+                ).order_by('-total_score','-published_at')
             
             print("\nRecommendation system result")
             for item in res:
@@ -87,7 +87,7 @@ class MarketListingListView(ListView):
 
             return res
         else:
-            return queryset.filter(published=True, sold=False).order_by('-created_at')
+            return queryset.filter(published=True, sold=False).order_by('-published_at')
     
 class ListingCreateView(LoginRequiredMixin, CreateView):
     model = Listing

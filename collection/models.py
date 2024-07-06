@@ -10,7 +10,6 @@ class Game(models.Model):
 class Set(models.Model):
     name = models.CharField(max_length=30)
     cod = models.CharField(max_length=10)
-    release_date = models.DateField()
     img_url = models.CharField(max_length=200)
 
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='sets')

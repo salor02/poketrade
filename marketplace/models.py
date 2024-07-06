@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 from collection.models import Card
 from django.core.exceptions import ValidationError
@@ -15,6 +16,7 @@ class Listing(models.Model):
     published = models.BooleanField(default=False)
     sold = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    published_at = models.DateTimeField(null=True)
 
     cards_for_sale = models.ManyToManyField(Card, related_name='listings_for_sale', blank=True)
     cards_in_exchange = models.ManyToManyField(Card, related_name='listings_in_exchange', blank=True)
@@ -27,6 +29,13 @@ class Listing(models.Model):
             raise ValidationError('Non puoi pubblicare un annuncio senza mettere in vendita nessuna carta!')
         if self.price < 0:
             raise ValidationError('Il prezzo non può essere negativo')
+        
+    def save(self, *args, **kwargs):
+        if self.published and self.published_at is None:
+            self.published_at = timezone.now()
+        elif not self.published:
+            self.published_at = None
+        super().save(*args, **kwargs)
         
     class Meta:
         ordering = ['-created_at']

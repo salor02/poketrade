@@ -15,11 +15,12 @@ def set_selection_mode(request, status, selection_dest = None, listing_id = None
     if not selection_dest or not listing_id:
         clear_session(request.session)
         return False
-    
+
+    listing = get_object_or_404(Listing, user=request.user, id=listing_id)
     request.session['selection'] = True
     request.session['selection_dest'] = selection_dest
     request.session['listing_id'] = listing_id
-    listing = get_object_or_404(Listing, user=request.user, id=listing_id)
+    
     return True
                 
 def clear_session(session):
