@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'marketplace.middleware.SelectionModeMiddleware'
+    'marketplace.middleware.SelectionModeMiddleware'
 ]
 
 #più comodo per debug
