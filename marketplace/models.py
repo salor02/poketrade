@@ -27,6 +27,8 @@ class Listing(models.Model):
         super().clean()
         if self.published and not self.cards_for_sale.exists():
             raise ValidationError('Non puoi pubblicare un annuncio senza mettere in vendita nessuna carta!')
+        if not self.price:
+            raise ValidationError('Immettere un prezzo valido')
         if self.price < 0:
             raise ValidationError('Il prezzo non può essere negativo')
         

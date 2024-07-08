@@ -13,7 +13,7 @@ class TransactionCreateFormTests(TestCase):
         self.user_other = User.objects.create_user(username='otheruser', password='otherpass')
         
         self.game = Game.objects.create(name='Test Game', img_url='test_game.png')
-        self.set = Set.objects.create(name='Test Set', cod='TS01', release_date='2023-01-01', img_url='test_set.png', game=self.game)
+        self.set = Set.objects.create(name='Test Set', cod='TS01', img_url='test_set.png', game=self.game)
         
         self.card1 = Card.objects.create(name='Test Card 1', cod='TC01', img_url='test_card1.png', move1='Move 1', description='Description', set=self.set)
         self.card2 = Card.objects.create(name='Test Card 2', cod='TC02', img_url='test_card2.png', move1='Move 2', description='Description', set=self.set)
@@ -91,6 +91,7 @@ class SetSelectionModeTests(TestCase):
 
     def test_user_not_authenticated(self):
         request = self.factory.get('/')
+        request.user = AnonymousUser()
         request.session = {}
         response = set_selection_mode(request, True, 'destination', self.listing.id)
 

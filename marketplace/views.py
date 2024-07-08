@@ -24,7 +24,7 @@ class ListingsListView(ListView):
             pending_transactions_count=Count('transactions', filter=Q(transactions__accepted=None))
         ).order_by('sold', '-created_at')
 
-        if self.request.user.is_authenticated and self.request.user.id != self.kwargs['user_id']:
+        if not self.request.user.is_authenticated or self.request.user.id != self.kwargs['user_id']:
             return queryset.filter(published=True)
         return queryset
     
@@ -49,7 +49,7 @@ class MarketListingListView(ListView):
                 res |= self.model.objects.filter(
                     Q(cards_for_sale__cod=param) |
                     Q(cards_in_exchange__cod=param)
-                )
+                ).distinct()
 
         return res
     

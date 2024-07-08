@@ -12,7 +12,7 @@ class CollectionManageViewTests(TestCase):
         
         # Creazione dei dati di test
         self.game = Game.objects.create(name='Test Game', img_url='test_game.png')
-        self.set = Set.objects.create(name='Test Set', cod='TS01', release_date='2023-01-01', img_url='test_set.png', game=self.game)
+        self.set = Set.objects.create(name='Test Set', cod='TS01', img_url='test_set.png', game=self.game)
         self.card = Card.objects.create(name='Test Card', cod='TC01', img_url='test_card.png', move1='Move 1', move2='Move 2', description='Description', set=self.set)
         self.wishlist = Wishlist.objects.create(name='Test Wishlist', user=self.user)
         
